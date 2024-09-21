@@ -1,64 +1,200 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import React from "react";
+import { StyleSheet, Text, View, FlatList, Image } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
-import { useEffect } from "react";
+import { useMediConnectStore } from '../Store/Store';
+import { TouchableOpacity } from "react-native-web";
+
+// Helper component for rendering individual appointments
+const AppointmentItem = ({ appointment }) => {
+  return (
+    <View style={styles.card}>
+      <View style={styles.row}>
+        <Image source={{ uri: appointment.image }} style={styles.doctorImage} />
+        <View style={styles.appointmentInfo}>
+          <View style={styles.NameDetailsView}>
+            <Text style={styles.doctorName}>{appointment.doctorName}</Text>
+            <TouchableOpacity style={styles.Details}><Text style={styles.DetailsText}>Details</Text></TouchableOpacity>
+          </View>
+          <Text style={styles.designation}>{appointment.designation}</Text>
+          <Text style={styles.dateTime}>{appointment.startTime} - {appointment.endTime}</Text>
+        </View>
+      </View>
+      <View style={[styles.statusView,appointment.status === 'completed' ? styles.completedStatus : 
+          appointment.status === 'cancelled' ? styles.canceledStatus : 
+          styles.scheduledStatus]}>
+        <Text style={[
+          styles.statusText,appointment.status === 'completed' ? styles.completedStatusText : 
+          appointment.status === 'cancelled' ? styles.canceledStatusText : 
+          styles.scheduledStatusText
+        ]}>
+          {appointment.status === 'completed' ? 'Appointment Finished' : 
+           appointment.status === 'cancelled' ? 'Appointment Canceled' : 'Scheduled'}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 export default function AppointmentCard({ Appointments }) {
+  const selectedAppointmentMonth = useMediConnectStore(state => state.selectedAppointmentMonth);
 
-  useEffect(()=>{
-    console.log(Appointments);
-},[Appointments]);
-
-  const renderAppointment = ({ item }) => (
-    <View style={styles.appointmentDetails}>
-      <Text style={styles.nameText}>{item.doctorName}</Text>
-    </View>
-  );
-
-  const renderDate = ({ item }) => (
-    <View style={styles.appointmentContainer}>
-      <Text style={styles.dateText}>{new Date(item.date).toDateString()}</Text>
-      <FlatList
-        data={item.appointments}
-        renderItem={renderAppointment}
-        keyExtractor={(item, index) => index.toString()}
-      />
-    </View>
-  );
-
-  const data = Object.entries(Appointments).map(([date, appointments]) => ({
-    date: parseInt(date),
-    appointments,
-  }));
+  if (!Appointments || Object.keys(Appointments).length === 0) {
+    return <Text style={styles.noAppointmentsText}>No appointments available</Text>;
+  }
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        data={data}
-        renderItem={renderDate}
-        keyExtractor={(item, index) => item.date.toString()}
-      />
-    </View>
+    <FlatList
+      data={Object.keys(Appointments)} // List of dates
+      keyExtractor={(item) => item.toString()}
+      renderItem={({ item: date }) => {
+        const appointmentsForDate = Appointments[date];
+        const firstAppointment = appointmentsForDate[0]; // Extract the first appointment for the day
+        
+        return (
+          <View style={styles.dateSection}>
+            <View style={styles.daydateview}>
+            <Text style={styles.dateText}>
+              {date}
+            </Text>
+            <View style={styles.daymonthSection}>
+            <Text style={styles.dayText}>{firstAppointment.day} </Text>
+            <Text style={styles.monthText}>{selectedAppointmentMonth}</Text>
+            </View>
+            </View>
+            {/* Render appointments for the selected date */}
+            <FlatList
+              data={appointmentsForDate} // Array of appointments for this date
+              keyExtractor={(item) => item.appointmentId}
+              renderItem={({ item: appointment }) => <AppointmentItem appointment={appointment} />}
+            />
+          </View>
+        );
+      }}
+    />
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: wp('4%'),
+  noAppointmentsText: {
+    fontSize: hp(2.5),
+    textAlign: 'center',
+    marginTop: hp(5),
   },
-  appointmentContainer: {
-    marginBottom: hp('2%'),
+  dateSection: {
+    marginBottom: hp(2),
+    marginLeft: wp(4),
+  },
+  daydateview: {
+    flexDirection: 'row',
   },
   dateText: {
-    fontSize: wp('4%'),
+    fontSize: hp(4),
+    fontWeight: 'bold',
+    color: '#2F3D7E',
+  },
+  daymonthSection:{
+    flexDirection:"column",
+    justifyContent:"center",
+    marginLeft:wp(2),
+    paddingTop:hp(1)
+  },
+  dayText:{
+    fontSize: hp(1.5),
+    fontWeight: 'bold',
+    color: '#B5B7C1',
+  },
+  monthText:{
+    fontSize: hp(1.5),
+    color: '#46538C',
+  },
+  card: {
+    borderRadius: 20,
+    padding: hp(2),
+    marginVertical: hp(1),
+    backgroundColor: '#FFF',
+    borderWidth: 1,
+    borderColor: "#2F3D7E",
+    width: wp(90),
+    marginRight: wp(4),
+  },
+  canceledCard: {
+    backgroundColor: '#FEE2E2',
+  },
+  completedCard: {
+    backgroundColor: '#E2F7E2',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  doctorImage: {
+    width: wp(15),
+    height: wp(15),
+    borderRadius: 10,
+    marginRight: wp(3),
+  },
+  appointmentInfo: {
+    flex: 1,
+  },
+  doctorName: {
+    fontSize: hp(2),
     fontWeight: 'bold',
   },
-  appointmentDetails: {
-    marginLeft: wp('2%'),
-    marginTop: hp('1%'),
+  designation: {
+    fontSize: hp(1.5),
+    color: '#666',
+    marginBottom: hp(1),
   },
-  nameText: {
-    fontSize: wp('3.5%'),
+  dateTime: {
+    fontSize: hp(1.6),
+    color: '#999',
+    fontWeight:"bold"
   },
-  dayText: {
-    fontSize: wp('3.5%'),
+  statusView: {
+    marginTop: hp(1),
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: wp(80),
+    borderRadius:10,
+    height:hp(5)
   },
+  statusText: {
+    fontSize: hp(2),
+    borderRadius: 20,
+    fontWeight:"bold",
+
+  },
+  completedStatus: {
+    backgroundColor: '#EBEDF3',
+  },
+  canceledStatus: {
+    backgroundColor: '#FAE9E6',    
+  },
+  scheduledStatus: {
+    backgroundColor: '#2F3D7E'  
+  },
+  completedStatusText: {
+    color: '#2F3D7E',
+  },
+  canceledStatusText: {
+    color: '#F37794',
+    
+  },
+  scheduledStatusText: {
+    color: 'white',
+  },
+  NameDetailsView:{
+    flexDirection:"row",
+    justifyContent:"space-between"
+  },
+  Details:{
+    
+  },
+  DetailsText:{
+    fontSize: hp(1.5),
+    fontWeight: 'bold',
+    color: 'gray',
+    textDecorationLine:"underline",
+    textDecorationColor:"black"
+  }
 });

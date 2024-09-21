@@ -6,17 +6,22 @@ import { useMediConnectStore } from '../Store/Store';
 
 export default function DropDownDates({ Data }) {
   const setSelectedAppointmentMonth = useMediConnectStore(state => state.setSelectedAppointmentMonth);
+  const selectedAppointmentMonth = useMediConnectStore(state => state.selectedAppointmentMonth);
+
+  // Find the default option object from the Data array that matches the selected month
+  const defaultOption = Data.find((item) => item === selectedAppointmentMonth) 
+    ? { key: selectedAppointmentMonth, value: selectedAppointmentMonth }
+    : { key: Data[0], value: Data[0] }; // Fallback to the first item if no match
 
   return (
     <View style={styles.container}>
       <SelectList
-        onSelect={(val) => setSelectedAppointmentMonth(val)}
+        onSelect={() => console.log(selectedAppointmentMonth)}
         setSelected={setSelectedAppointmentMonth}
-        fontFamily='lato'
         data={Data}
         arrowicon={<FontAwesome name="chevron-down" size={12} color={'black'} />}
         boxStyles={styles.boxStyles}
-        defaultOption={{ key: '11', value: 'July 2024' }}
+        defaultOption={defaultOption} 
         dropdownStyles={styles.dropdownStyles}
         search={false}
       />
@@ -29,7 +34,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     zIndex: 1,
     marginTop: hp(7),
-
   },
   boxStyles: {
     borderRadius: 20,
@@ -42,6 +46,7 @@ const styles = StyleSheet.create({
     width: wp(30),
     position: 'absolute',
     zIndex: 2,
-    marginTop: hp(6)
+    marginTop: hp(6),
+    backgroundColor:"white"
   },
 });

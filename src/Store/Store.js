@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 
 export const useMediConnectStore = create((set) => ({
-  selectedAppointmentMonth: "July 2024",  
+  selectedAppointmentMonth: "",  
   setSelectedAppointmentMonth:(Month)=> set({selectedAppointmentMonth: Month}),
 }))
 
