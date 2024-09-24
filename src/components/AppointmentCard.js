@@ -1,11 +1,10 @@
-import React from "react";
 import { StyleSheet, Text, View, FlatList, Image } from "react-native";
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useMediConnectStore } from '../Store/Store';
-import { TouchableOpacity } from "react-native-web";
-
-// Helper component for rendering individual appointments
+import { TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 const AppointmentItem = ({ appointment }) => {
+  const navigation = useNavigation();
   return (
     <View style={styles.card}>
       <View style={styles.row}>
@@ -13,7 +12,8 @@ const AppointmentItem = ({ appointment }) => {
         <View style={styles.appointmentInfo}>
           <View style={styles.NameDetailsView}>
             <Text style={styles.doctorName}>{appointment.doctorName}</Text>
-            <TouchableOpacity style={styles.Details}><Text style={styles.DetailsText}>Details</Text></TouchableOpacity>
+            <TouchableOpacity style={styles.Details} onPress={()=>navigation.navigate('AppointmentDetails', { AppointmentDetail : appointment })
+}><Text style={styles.DetailsText}>Details</Text></TouchableOpacity>
           </View>
           <Text style={styles.designation}>{appointment.designation}</Text>
           <Text style={styles.dateTime}>{appointment.startTime} - {appointment.endTime}</Text>
@@ -27,8 +27,8 @@ const AppointmentItem = ({ appointment }) => {
           appointment.status === 'cancelled' ? styles.canceledStatusText : 
           styles.scheduledStatusText
         ]}>
-          {appointment.status === 'completed' ? 'Appointment Finished' : 
-           appointment.status === 'cancelled' ? 'Appointment Canceled' : 'Scheduled'}
+          {appointment.status === 'completed' ? 'Appointment Completed' : 
+           appointment.status === 'cancelled' ? 'Appointment Cancelled' : 'Scheduled'}
         </Text>
       </View>
     </View>
@@ -44,11 +44,11 @@ export default function AppointmentCard({ Appointments }) {
 
   return (
     <FlatList
-      data={Object.keys(Appointments)} // List of dates
+      data={Object.keys(Appointments)} 
       keyExtractor={(item) => item.toString()}
       renderItem={({ item: date }) => {
         const appointmentsForDate = Appointments[date];
-        const firstAppointment = appointmentsForDate[0]; // Extract the first appointment for the day
+        const firstAppointment = appointmentsForDate[0]; 
         
         return (
           <View style={styles.dateSection}>
@@ -61,9 +61,8 @@ export default function AppointmentCard({ Appointments }) {
             <Text style={styles.monthText}>{selectedAppointmentMonth}</Text>
             </View>
             </View>
-            {/* Render appointments for the selected date */}
             <FlatList
-              data={appointmentsForDate} // Array of appointments for this date
+              data={appointmentsForDate} 
               keyExtractor={(item) => item.appointmentId}
               renderItem={({ item: appointment }) => <AppointmentItem appointment={appointment} />}
             />

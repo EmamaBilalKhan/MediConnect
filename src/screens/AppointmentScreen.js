@@ -58,8 +58,10 @@ export default function AppointmentScreen() {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.AppointmentText}>My Appointments</Text>
+    <View style={styles.container}>
+      <View style={styles.AppointmentView}>
+        <Text style={styles.AppointmentText}>My Appointments</Text>
+      </View>
       <View style={styles.NewApointmentView}>
         <AntDesign name="pluscircle" size={hp(2)} color="#2F3D7E" style={styles.plusIcon} />
         <Text style={styles.NewAppointmentText}>New Appointment</Text>
@@ -71,7 +73,7 @@ export default function AppointmentScreen() {
       )}
 
       {Loading && <Text>Loading Appointments...</Text>}
-    </ScrollView>
+    </View>
   );
 }
 
@@ -83,11 +85,18 @@ const styles = StyleSheet.create({
     paddingVertical: hp(1),
     paddingHorizontal: wp(4)
   },
+  AppointmentView:{
+    paddingTop: hp(0.5),
+    borderBottomWidth:hp(0.06),
+    borderBottomColor:"#d4d2cd",
+    paddingBottom:hp(1),
+    width:wp(100),
+    alignItems:"center"
+  },
   AppointmentText: {
-    marginTop: hp(0.5),
     fontSize: hp(2.8),
     fontWeight: "bold",
-    color: "#41474D"
+    color: "#41474D",
   },
   NewApointmentView: {
     flexDirection: "row",

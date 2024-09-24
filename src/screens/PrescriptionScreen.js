@@ -287,7 +287,9 @@ export default function PrescriptionScreen({navigation}){
         <>
         <StatusBar barStyle="dark-content" backgroundColor="white"/>
             <ScrollView contentContainerStyle={styles.container}>
+              <View style={styles.TopView}>
                 <Text style={styles.PrescriptionText}>My Prescriptions</Text>
+                </View>
                 <Text style={styles.LatestPrescriptionText}>Latest Prescription</Text>
                 <MedicationTable Medication={Prescriptions[1].Medication}/>
                 <Text style={styles.PastPrescriptionText}>Past Prescriptions</Text>
@@ -304,11 +306,18 @@ const styles = StyleSheet.create({
         paddingVertical:hp(1),
         paddingHorizontal:wp(4)
     },
-    PrescriptionText:{
-        marginTop:hp(0.5),
-        fontSize:hp(2.8),
-        fontWeight:"bold",
-        color:"#41474D"
+    TopView:{
+      paddingTop: hp(0.5),
+      borderBottomWidth:hp(0.06),
+      borderBottomColor:"#d4d2cd",
+      paddingBottom:hp(1),
+      width:wp(100),
+      alignItems:"center"
+    },
+    PrescriptionText: {
+      fontSize: hp(2.8),
+      fontWeight: "bold",
+      color: "#41474D",
     },
     LatestPrescriptionText:{
         marginBottom:hp(1.5),

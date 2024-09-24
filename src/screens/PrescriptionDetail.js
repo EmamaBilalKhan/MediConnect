@@ -33,16 +33,17 @@ const styles= StyleSheet.create({
     PrescriptionText:{
         fontSize:hp(2.8),
         fontWeight:"bold",
-        color:"#41474D",
-        
-        
+        color:"#41474D"
     },
     TopView:{
         flexDirection:"row",
         marginTop:hp(0.5),
         justifyContent:"center",
         width: wp(100),
-        alignItems:"center"
+        alignItems:"center",
+        borderBottomWidth:hp(0.06),
+        borderBottomColor:"#d4d2cd",
+        paddingBottom:hp(1)
         
     },
     backArrow:{
